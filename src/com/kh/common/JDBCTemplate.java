@@ -1,24 +1,32 @@
 package com.kh.common;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class JDBCTemplate {
-	private static final String ORACLE_DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
-	private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
-	private static final String DB_ID = "C##JDBC";
-	private static final String DB_PW = "JDBC";
+//	private static final String ORACLE_DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
+//	private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
+//	private static final String DB_ID = "C##JDBC";
+//	private static final String DB_PW = "JDBC";
 	
 	// 1. Connection 객체 생성 (DB 접속) 한 후 해당 Connection 객체를 반환 해주는 메서드
 	// [1],[2]에 해당
 	public static Connection getConnection(boolean autoCommit) {
 		Connection conn = null;
+		
 		try {
-			Class.forName(ORACLE_DRIVER_NAME);
-			conn = DriverManager.getConnection(DB_URL, DB_ID, DB_PW);
+			Properties properties = new Properties();
+			properties.load(new FileInputStream("jdbc.properties"));
+			
+			Class.forName(properties.getProperty("ORACLE_DRIVER_NAME"));
+			conn = DriverManager.getConnection(properties.getProperty("DB_URL"), properties.getProperty("DB_ID"), properties.getProperty("DB_PW"));
 			
 			if(!autoCommit) {
 				conn.setAutoCommit(autoCommit);
@@ -27,6 +35,12 @@ public class JDBCTemplate {
 		} catch(ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
