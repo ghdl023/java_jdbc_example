@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.kh.model.dao.MemberDao;
 import com.kh.model.vo.MemberVo;
+import com.kh.service.MemberService;
 import com.kh.view.MemberMenuView;
 
 /*
@@ -15,7 +16,8 @@ import com.kh.view.MemberMenuView;
  * 
  */
 public class MemberController {
-	private MemberDao memberDAO = new MemberDao();
+//	private MemberDao memberDAO = new MemberDao();
+	private MemberService memberService = new MemberService();
 	
 	/*
 	 * 회원 추가 요청을 처리해주는 메소드
@@ -39,7 +41,7 @@ public class MemberController {
 				request.get("address").toString(),
 				request.get("hobby").toString());
 		
-		int result = memberDAO.insertMember(m);
+		int result = memberService.insertMember(m);
 		
 		// [2]
 		if(result > 0) { // 회원 추가 성공
@@ -54,7 +56,7 @@ public class MemberController {
 	 */
 	public void selectAllList() {
 		// list 객체에 회원 전체 목록 담기
-		List<MemberVo> list = memberDAO.selectAllList();
+		List<MemberVo> list = memberService.selectAllList();
 		
 		// view쪽에 결과를 전달하여 출력
 		if(list.size() > 0) {
@@ -65,7 +67,7 @@ public class MemberController {
 	}
 	
 	public void searchByUserId(String userId) {
-		MemberVo m =  memberDAO.searchByUserId(userId);
+		MemberVo m =  memberService.searchByUserId(userId);
 		
 		if(m == null) {
 			new MemberMenuView().displayNoData(userId + "와 일치하는 회원이 없습니다.");
@@ -75,7 +77,7 @@ public class MemberController {
 	}
 	
 	public void searchByUserName(String userName) {
-		List<MemberVo> list = memberDAO.searchByUserName(userName);
+		List<MemberVo> list = memberService.searchByUserName(userName);
 		if(list.isEmpty()) {
 			new MemberMenuView().displayNoData("조회된 결과가 없습니다.");
 		} else {
@@ -95,7 +97,7 @@ public class MemberController {
 				request.get("address").toString(),
 				request.get("hobby").toString());
 		
-		int result = memberDAO.updateMember(m);
+		int result = memberService.updateMember(m);
 		
 		if(result > 0) { // 회원 정보 변경 성공
 			new MemberMenuView().displaySuccess("회원 정보 변경 성공했습니다.");
@@ -105,7 +107,7 @@ public class MemberController {
 	}
 	
 	public void deleteMember(String userId, String userPw) {
-		int result = memberDAO.deleteMember(userId, userPw);
+		int result = memberService.deleteMember(userId, userPw);
 		
 		if(result > 0) { // 회원 탈퇴 성공
 			new MemberMenuView().displaySuccess("회원 탈퇴 성공했습니다.");
