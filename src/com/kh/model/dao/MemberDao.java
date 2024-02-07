@@ -1,16 +1,37 @@
 package com.kh.model.dao;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.kh.common.JDBCTemplate;
 import com.kh.model.vo.MemberVo;
 
 public class MemberDao {
+	/*
+	 *  SQL문
+	 *   기존 : DAO클래스의 메서드 내에 SQL문을 명시적으로 작성함(정적코딩방식)
+	 *    ->문제점 : SQL문을 수정해야할대 자바 소스코드를 수정해얗마 => 수정한 내용을 반영할때 프로그램을 종료 후 재시작해야함(재배포....)
+	 *    ->해결: SQL문을 별도로 관리하는 외부파일(.xml)로 만들어서 실시간으로 기록된 SQL문을 읽어서 실행(동적실행방식)
+	 */
+	private Properties prop = new Properties();
+	
+	{
+		try {
+			prop.loadFromXML(new FileInputStream("resource/memberDao.xml"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 *	회원 추가 메서드
@@ -21,7 +42,8 @@ public class MemberDao {
 		PreparedStatement pstmt = null;
 		int result = 0;
 		
-		String sql = "INSERT INTO MEMBER VALUES(SEQ_USERNO.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT)";
+//		String sql = "INSERT INTO MEMBER VALUES(SEQ_USERNO.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, DEFAULT)";
+		String sql = prop.getProperty("insertMember");
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -51,8 +73,9 @@ public class MemberDao {
 		PreparedStatement pstmt = null;
 		List<MemberVo> list = new ArrayList<>();
 		
-		String sql = "SELECT * FROM MEMBER";
-		
+//		String sql = "SELECT * FROM MEMBER";
+		String sql = prop.getProperty("selectAllList"); // Properties에서 가져오기
+				
 		try {
 			pstmt = conn.prepareStatement(sql);
 			
@@ -87,8 +110,9 @@ public class MemberDao {
 		PreparedStatement pstmt = null;
 		MemberVo m = null;
 		
-		String sql = "SELECT * FROM MEMBER WHERE USERID = ?";
-
+//		String sql = "SELECT * FROM MEMBER WHERE USERID = ?";
+		String sql = prop.getProperty("searchByUserId");
+		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, userId);
@@ -125,7 +149,8 @@ public class MemberDao {
 		PreparedStatement pstmt = null;
 		List<MemberVo> list = new ArrayList<>();
 		
-		String sql = "SELECT * FROM MEMBER WHERE USERNAME LIKE '%' || ? || '%'";
+//		String sql = "SELECT * FROM MEMBER WHERE USERNAME LIKE '%' || ? || '%'";
+		String sql = prop.getProperty("searchByUserName");
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -161,7 +186,8 @@ public class MemberDao {
 		PreparedStatement pstmt = null;
 		int result = 0;
 		
-		String sql = "UPDATE MEMBER SET USERPW=?, USERNAME=?, GENDER=?, AGE=?, EMAIL=?, PHONE=?, HOBBY=? WHERE USERID=?";
+//		String sql = "UPDATE MEMBER SET USERPW=?, USERNAME=?, GENDER=?, AGE=?, EMAIL=?, PHONE=?, HOBBY=? WHERE USERID=?";
+		String sql = prop.getProperty("updateMember");
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -188,7 +214,8 @@ public class MemberDao {
 	public int deleteMember(Connection conn, String userId, String userPw) {
 		int result = 0;
 		
-		String sql = "DELETE FROM MEMBER WHERE USERID=? AND USERPW=?";
+//		String sql = "DELETE FROM MEMBER WHERE USERID=? AND USERPW=?";
+		String sql = prop.getProperty("deleteMember");
 		
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(sql);

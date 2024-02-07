@@ -19,14 +19,18 @@ public class JDBCTemplate {
 	// 1. Connection 객체 생성 (DB 접속) 한 후 해당 Connection 객체를 반환 해주는 메서드
 	// [1],[2]에 해당
 	public static Connection getConnection(boolean autoCommit) {
+		
 		Connection conn = null;
 		
 		try {
-			Properties properties = new Properties();
-			properties.load(new FileInputStream("jdbc.properties"));
+			Properties prop = new Properties();
+			prop.load(new FileInputStream("jdbc.properties"));
 			
-			Class.forName(properties.getProperty("ORACLE_DRIVER_NAME"));
-			conn = DriverManager.getConnection(properties.getProperty("DB_URL"), properties.getProperty("DB_ID"), properties.getProperty("DB_PW"));
+			// [1] jdbc driver 등록
+			Class.forName(prop.getProperty("ORACLE_DRIVER_NAME"));
+			
+			// [2] Connection 객체 생성
+			conn = DriverManager.getConnection(prop.getProperty("DB_URL"), prop.getProperty("DB_ID"), prop.getProperty("DB_PW"));
 			
 			if(!autoCommit) {
 				conn.setAutoCommit(autoCommit);
